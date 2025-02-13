@@ -1,51 +1,48 @@
-name: Deploy
-
 on:
-  push:
-    branches:
-      - main
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy to'
+        required: true
+        type: choice
+        options:
+          # - dev
+          - qa
+          - prod
 
 jobs:
-  build-and-deploy:
+  deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Build
-        run: |
-          # Build code here
-          echo "Building code..."
-
       - name: Deploy to Dev
+        # if: github.event.inputs.environment == 'dev'
         run: |
           # Deploy to Dev environment
           echo "Deploying to Dev environment..."
 
-      - name: Manual Approval for QA
+      - name: Wait for QA approval
+        if: github.event.inputs.environment == 'qa'
         run: |
           echo "Waiting for manual approval for QA deployment"
-          read -p "Approve deployment to QA? (y/n) " -n 1 -r
-          echo    # (optional) move to a new line
-          if [[ $REPLY =~ ^[Yy]$ ]]
-          then
-            # Deploy to QA environment
-            echo "Deploying to QA environment..."
-          else
-            echo "Deployment to QA environment cancelled"
-            exit 1
-          fi
+          # Use a timeout or a manual approval mechanism here
 
-      - name: Manual Approval for Prod
+      - name: Deploy to QA
+        if: github.event.inputs.environment == 'qa'
+        run: |
+          # Deploy to QA environment
+          echo "Deploying to QA environment..."
+
+      - name: Wait for Prod approval
+        if: github.event.inputs.environment == 'prod'
         run: |
           echo "Waiting for manual approval for Prod deployment"
-          read -p "Approve deployment to Prod? (y/n) " -n 1 -r
-          echo    # (optional) move to a new line
-          if [[ $REPLY =~ ^[Yy]$ ]]
-          then
-            # Deploy to Prod environment
-            echo "Deploying to Prod environment..."
-          else
-            echo "Deployment to Prod environment cancelled"
-            exit 1
-          fi
+          # Use a timeout or a manual approval mechanism here
+
+      - name: Deploy to Prod
+        if: github.event.inputs.environment == 'prod'
+        run: |
+          # Deploy to Prod environment
+          echo "Deploying to Prod environment..."
