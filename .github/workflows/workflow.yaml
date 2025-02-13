@@ -1,37 +1,51 @@
-name: Deploy Application
+name: Deploy
 
-# Trigger on push to main branch or manually via workflow_dispatch
 on:
   push:
     branches:
       - main
-  workflow_dispatch: # Allows manual triggering
 
 jobs:
-  deploy:
+  build-and-deploy:
     runs-on: ubuntu-latest
-
     steps:
-      # Check out the repository
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v2
 
-      # Set up environment (e.g., install dependencies)
-      - name: Set up environment
+      - name: Build
         run: |
-          echo "Setting up environment..."
-          # Add your setup commands here, e.g., npm install, pip install, etc.
+          # Build code here
+          echo "Building code..."
 
-      # Automatic deployment (triggered by push to main)
-      - name: Auto Deploy
-        if: github.event_name == 'push' # Runs only on push events
+      - name: Deploy to Dev
         run: |
-          echo "Running automatic deployment..."
-          # Add your deployment commands here, e.g., deploy to production
+          # Deploy to Dev environment
+          echo "Deploying to Dev environment..."
 
-      # Manual deployment (triggered by workflow_dispatch)
-      - name: Manual Deploy
-        if: github.event_name == 'workflow_dispatch' # Runs only on manual trigger
+      - name: Manual Approval for QA
         run: |
-          echo "Running manual deployment..."
-          # Add your deployment commands here, e.g., deploy to staging
+          echo "Waiting for manual approval for QA deployment"
+          read -p "Approve deployment to QA? (y/n) " -n 1 -r
+          echo    # (optional) move to a new line
+          if [[ $REPLY =~ ^[Yy]$ ]]
+          then
+            # Deploy to QA environment
+            echo "Deploying to QA environment..."
+          else
+            echo "Deployment to QA environment cancelled"
+            exit 1
+          fi
+
+      - name: Manual Approval for Prod
+        run: |
+          echo "Waiting for manual approval for Prod deployment"
+          read -p "Approve deployment to Prod? (y/n) " -n 1 -r
+          echo    # (optional) move to a new line
+          if [[ $REPLY =~ ^[Yy]$ ]]
+          then
+            # Deploy to Prod environment
+            echo "Deploying to Prod environment..."
+          else
+            echo "Deployment to Prod environment cancelled"
+            exit 1
+          fi
