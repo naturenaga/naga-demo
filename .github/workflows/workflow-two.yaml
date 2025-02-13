@@ -1,0 +1,17 @@
+name: Workflow Two
+
+on:
+  workflow_run:
+    workflows: ["Workflow One"]
+    types:
+      - completed
+
+jobs:
+  deploy-to-prod:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Deploy to prod
+        run: |
+          # Deploy to prod environment here
