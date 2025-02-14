@@ -1,0 +1,30 @@
+name: Deploy to QA/Prod
+
+on:
+  workflow_dispatch:
+    inputs:
+      deploy_to_qa:
+        description: 'Deploy to QA'
+        required: false
+      deploy_to_prod:
+        description: 'Deploy to Prod'
+        required: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Deploy to QA
+        run: |
+          # Deploy to QA environment
+          echo "Deploying to QA environment..."
+        if: github.event.inputs.deploy_to_qa == 'true'
+
+      - name: Deploy to Prod
+        run: |
+          # Deploy to Prod environment
+          echo "Deploying to Prod environment..."
+        if: github.event.inputs.deploy_to_prod == 'true'
