@@ -17,14 +17,28 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
+      - name: Approval for QA
+        uses: actions/approval@v1
+        if: github.event.inputs.deploy_to_qa == 'true'
+        with:
+          approvers: 'your-username' # replace with your GitHub username
+          message: 'Please approve deployment to QA'
+
       - name: Deploy to QA
         run: |
           # Deploy to QA environment
           echo "Deploying to QA environment..."
-        if: github.event.inputs.deploy_to_qa == 'true'
+        if: github.event.inputs.deploy_to_qa == 'true' && github.event.inputs.approval == 'approved'
+
+      - name: Approval for Prod
+        uses: actions/approval@v1
+        if: github.event.inputs.deploy_to_prod == 'true'
+        with:
+          approvers: 'your-username' # replace with your GitHub username
+          message: 'Please approve deployment to Prod'
 
       - name: Deploy to Prod
         run: |
           # Deploy to Prod environment
           echo "Deploying to Prod environment..."
-        if: github.event.inputs.deploy_to_prod == 'true'
+        if: github.event.inputs.deploy_to_prod == 'true' && github.event.inputs.approval == 'approved'
