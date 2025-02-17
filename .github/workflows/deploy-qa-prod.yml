@@ -21,8 +21,9 @@ jobs:
         uses: actions/approval@v1
         if: github.event.inputs.deploy_to_qa == 'true'
         with:
-          approvers: 'your-username' # replace with your GitHub username
+          approvers: 'naturenaga' # list of GitHub usernames
           message: 'Please approve deployment to QA'
+          approval-type: 'any' # or 'all'
 
       - name: Deploy to QA
         run: |
@@ -34,8 +35,9 @@ jobs:
         uses: actions/approval@v1
         if: github.event.inputs.deploy_to_prod == 'true'
         with:
-          approvers: 'your-username' # replace with your GitHub username
+          approvers: 'user1,user2,user3' # list of GitHub usernames
           message: 'Please approve deployment to Prod'
+          approval-type: 'any' # or 'all'
 
       - name: Deploy to Prod
         run: |
