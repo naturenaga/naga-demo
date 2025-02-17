@@ -2,11 +2,6 @@ name: main
 
 on:
   workflow_dispatch:
-    inputs:
-      approve:
-        description: 'Approve deployment'
-        required: true
-        type: boolean
 
 jobs:
   build:
@@ -20,8 +15,10 @@ jobs:
     name: deploy
     runs-on: ubuntu-latest
     needs: build
-    if: github.event.inputs.approve == 'true'
     steps:
+      - uses: naturenaga/manual-approval@v1
+        with:
+          secret: ${{ github.TOKEN }}
+          approvers: naturenaga
       - name: Deploy to production
         run: echo deploying
-
