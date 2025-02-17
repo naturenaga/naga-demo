@@ -1,46 +1,22 @@
-name: Deploy to QA/Prod
-
+name: main
 on:
   workflow_dispatch:
-    inputs:
-      deploy_to_qa:
-        description: 'Deploy to QA'
-        required: false
-      deploy_to_prod:
-        description: 'Deploy to Prod'
-        required: false
 
 jobs:
-  deploy:
+  build:
+    name: build
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Approval for QA
-        uses: actions/approval@v1
-        if: github.event.inputs.deploy_to_qa == 'true'
+      - name: Build
+        run: echo building
+  deploy:
+    name: deploy
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: trstringer/manual-approval@v1
         with:
-          approvers: 'naturenaga' # list of GitHub usernames
-          message: 'Please approve deployment to QA'
-          approval-type: 'any' # or 'all'
-
-      - name: Deploy to QA
-        run: |
-          # Deploy to QA environment
-          echo "Deploying to QA environment..."
-        if: github.event.inputs.deploy_to_qa == 'true' && github.event.inputs.approval == 'approved'
-
-      - name: Approval for Prod
-        uses: actions/approval@v1
-        if: github.event.inputs.deploy_to_prod == 'true'
-        with:
-          approvers: 'user1,user2,user3' # list of GitHub usernames
-          message: 'Please approve deployment to Prod'
-          approval-type: 'any' # or 'all'
-
-      - name: Deploy to Prod
-        run: |
-          # Deploy to Prod environment
-          echo "Deploying to Prod environment..."
-        if: github.event.inputs.deploy_to_prod == 'true' && github.event.inputs.approval == 'approved'
+          secret: ${{ github.TOKEN }}
+          approvers: trstringer,acdunnigan
+      - name: Deploy to production
+        run: echo deploying
