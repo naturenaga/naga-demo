@@ -1,20 +1,26 @@
-name: Manually triggered workflow
+name: main
+
 on:
   workflow_dispatch:
-    inputs:
-      name:
-        description: 'Person to greet'
-        required: true
-        default: 'Mona the Octocat'
-      home:
-        description: 'location'
-        required: false
-        default: 'The Octoverse'
-
+# 
 jobs:
-  say_hello:
+  build:
+    name: build
     runs-on: ubuntu-latest
     steps:
-    - run: |
-        echo "Hello ${{ github.event.inputs.name }}!"
-        echo "- in ${{ github.event.inputs.home }}!"
+      - name: Build
+        run: echo building
+
+  deploy:
+    name: deploy
+    runs-on: ubuntu-latest
+    needs: build
+    environment:
+      name: qa
+    steps:
+      - uses: naturenaga/manual-approval@v1
+        with:
+          secret: ${{ github.TOKEN }}
+          approvers: naturenaga
+      - name: Deploy to production
+        run: echo deploying
